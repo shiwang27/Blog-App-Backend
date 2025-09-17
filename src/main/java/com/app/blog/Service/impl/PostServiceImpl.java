@@ -15,8 +15,10 @@ import com.app.blog.Entities.Category;
 import com.app.blog.Entities.Post;
 import com.app.blog.Entities.User;
 import com.app.blog.Exceptions.ResourceNotFoundException;
+import com.app.blog.Payloads.CategoryDto;
 import com.app.blog.Payloads.PostDto;
 import com.app.blog.Payloads.PostResponse;
+import com.app.blog.Payloads.UserDto;
 import com.app.blog.Service.PostService;
 import com.app.blog.repository.CategoryRepo;
 import com.app.blog.repository.PostRepo;
@@ -38,12 +40,34 @@ public class PostServiceImpl implements PostService {
         this.categoryRepo = categoryRepo;
     }
 
+    // ✅ Map Post -> PostDto with nested category and user
     private PostDto mapToDto(Post post) {
-        return modelMapper.map(post, PostDto.class);
+        PostDto postDto = modelMapper.map(post, PostDto.class);
+
+        if (post.getCategory() != null) {
+            postDto.setCategoryDto(modelMapper.map(post.getCategory(), CategoryDto.class));
+        }
+
+        if (post.getUser() != null) {
+            postDto.setUserDto(modelMapper.map(post.getUser(), UserDto.class));
+        }
+
+        return postDto;
     }
 
+    // ✅ Map PostDto -> Post with nested category and user
     private Post mapToEntity(PostDto dto) {
-        return modelMapper.map(dto, Post.class);
+        Post post = modelMapper.map(dto, Post.class);
+
+        if (dto.getCategoryDto() != null) {
+            post.setCategory(modelMapper.map(dto.getCategoryDto(), Category.class));
+        }
+
+        if (dto.getUserDto() != null) {
+            post.setUser(modelMapper.map(dto.getUserDto(), User.class));
+        }
+
+        return post;
     }
 
     @Override
@@ -90,10 +114,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse getAllPosts(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
-        
-    	Sort sort = (sortDir.equalsIgnoreCase("asc"))?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
-    	
-    	Pageable p = PageRequest.of(pageNumber, pageSize, sort);
+        Sort sort = (sortDir.equalsIgnoreCase("asc"))
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable p = PageRequest.of(pageNumber, pageSize, sort);
         Page<Post> pagePosts = postRepo.findAll(p);
 
         List<PostDto> postDtos = pagePosts.getContent().stream()
@@ -128,11 +153,12 @@ public class PostServiceImpl implements PostService {
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
-    
+
     @Override
-    public List<PostDto> searchPosts(String keyword){
-    	List<Post> posts =this.postRepo.findByTitleContaining(keyword);
-    	List<PostDto> postDtos= posts.stream().map((post)->this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
-    	return postDtos;
+    public List<PostDto> searchPosts(String keyword) {
+        List<Post> posts = this.postRepo.findByTitleContaining(keyword);
+        return posts.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 }
