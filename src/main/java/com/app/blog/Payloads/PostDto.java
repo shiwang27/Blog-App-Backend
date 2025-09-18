@@ -1,6 +1,10 @@
 package com.app.blog.Payloads;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.app.blog.Entities.CommentDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,5 +28,7 @@ public class PostDto {
 	private CategoryDto categoryDto;
 	
 	private UserDto userDto;
+	
+	private Set<CommentDto> comments = new HashSet<>();
 
 }
