@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.blog.Entities.Comment;
-import com.app.blog.Entities.CommentDto;
 import com.app.blog.Entities.Post;
 import com.app.blog.Exceptions.ResourceNotFoundException;
+import com.app.blog.Payloads.CommentDto;
 import com.app.blog.Service.CommentService;
 import com.app.blog.repository.CommentRepo;
 import com.app.blog.repository.PostRepo;

@@ -1,6 +1,6 @@
 package com.app.blog.Service;
 
-import com.app.blog.Entities.CommentDto;
+import com.app.blog.Payloads.CommentDto;
 
 public interface CommentService {
 	
